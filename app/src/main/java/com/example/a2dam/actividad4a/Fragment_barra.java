@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -131,22 +132,27 @@ public class Fragment_barra extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
+        ft = fm.beginTransaction();
+        Fragment aa = AltaAlumno.newInstance("","");
+        Fragment ap = AltaProfesor.newInstance("","");
         switch (view.getId()){
             case R.id.alta_alumno:
-                ft = fm.beginTransaction();
                 if (mListener.estaFragmentDinamic()){
-                    ft.replace(R.id.fragment_dinamic, AltaAlumno.newInstance("",""));
+                    ft.replace(R.id.fragment_dinamic,aa);
+                    ft.addToBackStack(null);
                 } else {
-                    ft.add(R.id.fragment_dinamic,AltaAlumno.newInstance("",""));
+                    ft.add(R.id.fragment_dinamic,aa);
+                    ft.addToBackStack(null);
                 }
                 ft.commit();
                 break;
             case R.id.alta_profesor:
-                ft = fm.beginTransaction();
                 if (mListener.estaFragmentDinamic()){
-                    ft.replace(R.id.fragment_dinamic, AltaProfesor.newInstance("",""));
+                    ft.replace(R.id.fragment_dinamic, ap);
+                    ft.addToBackStack(null);
                 } else {
-                    ft.add(R.id.fragment_dinamic, AltaProfesor.newInstance("", ""));
+                    ft.add(R.id.fragment_dinamic, ap);
+                    ft.addToBackStack(null);
                 }
                 ft.commit();
                 break;
