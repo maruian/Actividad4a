@@ -1,15 +1,21 @@
 package com.example.a2dam.actividad4a;
 
+import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 
 public class MainActivity extends AppCompatActivity implements Fragment_barra.OnFragmentInteractionListener,
-        AltaAlumno.OnFragmentInteractionListener, AltaProfesor.OnFragmentInteractionListener {
+        AltaAlumno.OnFragmentInteractionListener, AltaProfesor.OnFragmentInteractionListener,
+        BorrarRegistro.OnFragmentInteractionListener, EstudiantesPorCiclo.OnFragmentInteractionListener,
+        EstudiantesPorCurso.OnFragmentInteractionListener, EstudiantesPorCicloCurso.OnFragmentInteractionListener,
+        TodosEstudiantes.OnFragmentInteractionListener,ProfesoresPorCiclo.OnFragmentInteractionListener,
+        ProfesoresPorCicloCurso.OnFragmentInteractionListener, ProfesoresPorCurso.OnFragmentInteractionListener,
+        TodosProfesores.OnFragmentInteractionListener, TodosProfesoresAlumnos.OnFragmentInteractionListener{
 
+    static AdaptadorBBDD adaptadorBBDD;
     FragmentManager fm;
 
     @Override
@@ -17,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements Fragment_barra.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         fm = getSupportFragmentManager();
+        adaptadorBBDD = new AdaptadorBBDD(this);
     }
 
     @Override
@@ -33,5 +40,9 @@ public class MainActivity extends AppCompatActivity implements Fragment_barra.On
             return true;
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
 }
 

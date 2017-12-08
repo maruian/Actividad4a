@@ -4,23 +4,29 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link AltaProfesor.OnFragmentInteractionListener} interface
+ * {@link EstudiantesPorCiclo.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link AltaProfesor#newInstance} factory method to
+ * Use the {@link EstudiantesPorCiclo#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AltaProfesor extends Fragment {
+public class EstudiantesPorCiclo extends Fragment implements AdapterView.OnItemSelectedListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -30,13 +36,15 @@ public class AltaProfesor extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    // Definim les variables requerides
-    EditText nombre, edad, ciclo, curso, despacho;
-    Button guardar;
+    // Definim les variables necesaries
+    Spinner spinner;
+    ListView alumnos;
+    String ciclo;
+    ArrayAdapter<String> adapterAlumnos;
 
     private OnFragmentInteractionListener mListener;
 
-    public AltaProfesor() {
+    public EstudiantesPorCiclo() {
         // Required empty public constructor
     }
 
@@ -46,11 +54,11 @@ public class AltaProfesor extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment AltaAlumno.
+     * @return A new instance of fragment EstudiantesPorCiclo.
      */
     // TODO: Rename and change types and number of parameters
-    public static AltaProfesor newInstance(String param1, String param2) {
-        AltaProfesor fragment = new AltaProfesor();
+    public static EstudiantesPorCiclo newInstance(String param1, String param2) {
+        EstudiantesPorCiclo fragment = new EstudiantesPorCiclo();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -71,47 +79,36 @@ public class AltaProfesor extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.alta_profesor, container, false);
-        nombre = (EditText)v.findViewById(R.id.editNombre);
-        edad  = (EditText)v.findViewById(R.id.editEdad);
-        ciclo = (EditText)v.findViewById(R.id.editCiclo);
-        curso = (EditText)v.findViewById(R.id.editCurso);
-        despacho = (EditText)v.findViewById(R.id.editDespacho);
-        guardar = (Button)v.findViewById(R.id.guardar);
-        guardar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (checkData()) {
-                    MainActivity.adaptadorBBDD.open();
-                    MainActivity.adaptadorBBDD.insertarProfesor(
-                            nombre.getText().toString(), Integer.parseInt(edad.getText().toString()),
-                            ciclo.getText().toString(), curso.getText().toString(),
-                            despacho.getText().toString());
-                    nombre.setText("");
-                    edad.setText("");
-                    ciclo.setText("");
-                    curso.setText("");
-                    despacho.setText("");
-                    Toast.makeText(getActivity(),"Datos guardados",Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getActivity(),"Introduce datos validos", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        View v = inflater.inflate(R.layout.estudiantesporciclo, container, false);
+
+        ciclo="DAM";
+        spinner = (Spinner)v.findViewById(R.id.spinnerCiclo);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),R.array.arrayCiclos, android.R.layout.simple_spinner_dropdown_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(this);
+
+        alumnos = (ListView)v.findViewById(R.id.listaEstudiantes);
+        adapterAlumnos = new ArrayAdapter<>(getActivity(), R.layout.listview_alumnes,idAlumnos());
+        alumnos.setAdapter(adapterAlumnos);
 
         return v;
     }
 
-    public boolean checkData(){
-        try {
-            Integer.parseInt(edad.getText().toString());
-        }catch (NumberFormatException e){
-            return false;
+    public String[] idAlumnos(){
+        MainActivity.adaptadorBBDD.open();
+        ArrayList<Alumno> alAlumnos = MainActivity.adaptadorBBDD.devuelveEstudiantesCiclo(ciclo);
+        ArrayList<String> strAlumnos = new ArrayList<>();
+        Iterator it = alAlumnos.iterator();
+        String alumnoStr;
+        while (it.hasNext()){
+            Alumno a = (Alumno)it.next();
+            alumnoStr = "Id: "+a.getId()+" Nombre: "+a.getNombre()+ " Curso: "+a.getCurso()+ " Edad: "+ a.getEdad()+" Nota: "+a.getNota();
+            strAlumnos.add(alumnoStr);
         }
-        return (nombre.getText().toString().length()>0)&&
-                (ciclo.getText().toString().length()>0)&&
-                (curso.getText().toString().length()>0)&&
-                (despacho.getText().toString().length()>0);
+        String[] resultado = new String[strAlumnos.size()];
+        resultado = strAlumnos.toArray(resultado);
+        return resultado;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -138,6 +135,18 @@ public class AltaProfesor extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+        ciclo = spinner.getSelectedItem().toString();
+        adapterAlumnos = new ArrayAdapter<>(getActivity(), R.layout.listview_alumnes,idAlumnos());
+        alumnos.setAdapter(adapterAlumnos);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -151,8 +160,5 @@ public class AltaProfesor extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
-        boolean estaFragmentDinamic();
     }
 }
-
-

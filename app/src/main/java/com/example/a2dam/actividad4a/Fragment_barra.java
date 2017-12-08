@@ -11,9 +11,12 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.Toast;
 
 
 /**
@@ -42,7 +45,7 @@ public class Fragment_barra extends Fragment implements View.OnClickListener {
     FragmentTransaction ft;
 
     //Definim botons
-    Button altaAlumne, altaProfesor, borrar;
+    Button altaAlumne, altaProfesor, borrar, consultas;
 
     public Fragment_barra() {
         // Required empty public constructor
@@ -91,6 +94,10 @@ public class Fragment_barra extends Fragment implements View.OnClickListener {
         altaProfesor = v.findViewById(R.id.alta_profesor);
         altaProfesor.setOnClickListener(this);
 
+        consultas = v.findViewById(R.id.consultas);
+        registerForContextMenu(consultas);
+        registerForContextMenu(consultas);
+
         return v;
     }
 
@@ -121,7 +128,144 @@ public class Fragment_barra extends Fragment implements View.OnClickListener {
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater=getActivity().getMenuInflater();
-        inflater.inflate(R.menu.menu_borrar,menu);
+        switch (v.getId()){
+            case R.id.consultas:
+                inflater.inflate(R.menu.menu_consultas, menu);
+                break;
+            case R.id.borrar:
+                inflater.inflate(R.menu.menu_borrar,menu);
+                break;
+            default: break;
+        }
+
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.borrar_registro:
+                ft = fm.beginTransaction();
+                if (mListener.estaFragmentDinamic()){
+                    ft.replace(R.id.fragment_dinamic,BorrarRegistro.newInstance("",""));
+                    ft.addToBackStack(null);
+                } else {
+                    ft.add(R.id.fragment_dinamic,BorrarRegistro.newInstance("",""));
+                    ft.addToBackStack(null);
+                }
+                ft.commit();
+                return true;
+            case R.id.borrar_bbdd:
+                ft = fm.beginTransaction();
+                Toast.makeText(getActivity(),"Borrando base de datos",Toast.LENGTH_SHORT).show();
+                MainActivity.adaptadorBBDD.open();
+                MainActivity.adaptadorBBDD.vaciarTablas();
+                if (mListener.estaFragmentDinamic()){
+                    ft.remove(fm.findFragmentById(R.id.fragment_dinamic));
+                }
+                ft.commit();
+                return true;
+            case R.id.estudiantesPorCiclo:
+                ft = fm.beginTransaction();
+                if (mListener.estaFragmentDinamic()){
+                    ft.replace(R.id.fragment_dinamic,EstudiantesPorCiclo.newInstance("",""));
+                    ft.addToBackStack(null);
+                } else {
+                    ft.add(R.id.fragment_dinamic,EstudiantesPorCiclo.newInstance("",""));
+                    ft.addToBackStack(null);
+                }
+                ft.commit();
+                return true;
+            case R.id.estudiantesPorCurso:
+                ft = fm.beginTransaction();
+                if (mListener.estaFragmentDinamic()){
+                    ft.replace(R.id.fragment_dinamic,EstudiantesPorCurso.newInstance("",""));
+                    ft.addToBackStack(null);
+                } else {
+                    ft.add(R.id.fragment_dinamic,EstudiantesPorCurso.newInstance("",""));
+                    ft.addToBackStack(null);
+                }
+                ft.commit();
+                return true;
+            case R.id.estudiantesPorCicloCurso:
+                ft = fm.beginTransaction();
+                if (mListener.estaFragmentDinamic()){
+                    ft.replace(R.id.fragment_dinamic,EstudiantesPorCicloCurso.newInstance("",""));
+                    ft.addToBackStack(null);
+                } else {
+                    ft.add(R.id.fragment_dinamic,EstudiantesPorCicloCurso.newInstance("",""));
+                    ft.addToBackStack(null);
+                }
+                ft.commit();
+                return true;
+            case R.id.estudiantesTodos:
+                ft = fm.beginTransaction();
+                if (mListener.estaFragmentDinamic()){
+                    ft.replace(R.id.fragment_dinamic,TodosEstudiantes.newInstance("",""));
+                    ft.addToBackStack(null);
+                } else {
+                    ft.add(R.id.fragment_dinamic,TodosEstudiantes.newInstance("",""));
+                    ft.addToBackStack(null);
+                }
+                ft.commit();
+                return true;
+            case R.id.profesoresPorCiclo:
+                ft = fm.beginTransaction();
+                if (mListener.estaFragmentDinamic()){
+                    ft.replace(R.id.fragment_dinamic,ProfesoresPorCiclo.newInstance("",""));
+                    ft.addToBackStack(null);
+                } else {
+                    ft.add(R.id.fragment_dinamic,ProfesoresPorCiclo.newInstance("",""));
+                    ft.addToBackStack(null);
+                }
+                ft.commit();
+                return true;
+            case R.id.profesoresPorCurso:
+                ft = fm.beginTransaction();
+                if (mListener.estaFragmentDinamic()){
+                    ft.replace(R.id.fragment_dinamic,ProfesoresPorCurso.newInstance("",""));
+                    ft.addToBackStack(null);
+                } else {
+                    ft.add(R.id.fragment_dinamic,ProfesoresPorCurso.newInstance("",""));
+                    ft.addToBackStack(null);
+                }
+                ft.commit();
+                return true;
+            case R.id.profesoresPorCicloCurso:
+                ft = fm.beginTransaction();
+                if (mListener.estaFragmentDinamic()){
+                    ft.replace(R.id.fragment_dinamic,ProfesoresPorCicloCurso.newInstance("",""));
+                    ft.addToBackStack(null);
+                } else {
+                    ft.add(R.id.fragment_dinamic,ProfesoresPorCicloCurso.newInstance("",""));
+                    ft.addToBackStack(null);
+                }
+                ft.commit();
+                return true;
+            case R.id.profesoresTodos:
+                ft = fm.beginTransaction();
+                if (mListener.estaFragmentDinamic()){
+                    ft.replace(R.id.fragment_dinamic,TodosProfesores.newInstance("",""));
+                    ft.addToBackStack(null);
+                } else {
+                    ft.add(R.id.fragment_dinamic,TodosProfesores.newInstance("",""));
+                    ft.addToBackStack(null);
+                }
+                ft.commit();
+                return true;
+            case R.id.profosoresAlumnosTodos:
+                ft = fm.beginTransaction();
+                if (mListener.estaFragmentDinamic()){
+                    ft.replace(R.id.fragment_dinamic,TodosProfesoresAlumnos.newInstance("",""));
+                    ft.addToBackStack(null);
+                } else {
+                    ft.add(R.id.fragment_dinamic,TodosProfesoresAlumnos.newInstance("",""));
+                    ft.addToBackStack(null);
+                }
+                ft.commit();
+                return true;
+            default: return false;
+        }
+        // return super.onOptionsItemSelected(item);
     }
 
     @Override

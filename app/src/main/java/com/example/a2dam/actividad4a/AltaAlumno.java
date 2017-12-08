@@ -7,6 +7,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 
 /**
@@ -26,6 +29,10 @@ public class AltaAlumno extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    // Definim les variables requerides
+    EditText nombre, edad, ciclo, curso, nota;
+    Button guardar;
 
     private OnFragmentInteractionListener mListener;
 
@@ -64,7 +71,45 @@ public class AltaAlumno extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.alta_alumne, container, false);
+        View v = inflater.inflate(R.layout.alta_alumne, container, false);
+        nombre = (EditText)v.findViewById(R.id.editNombre);
+        edad  = (EditText)v.findViewById(R.id.editEdad);
+        ciclo = (EditText)v.findViewById(R.id.editCiclo);
+        curso = (EditText)v.findViewById(R.id.editCurso);
+        nota = (EditText)v.findViewById(R.id.editNota);
+        guardar = (Button)v.findViewById(R.id.guardar);
+        guardar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (checkData()) {
+                    MainActivity.adaptadorBBDD.open();
+                    MainActivity.adaptadorBBDD.insertarAlumno(nombre.getText().toString(), Integer.parseInt(edad.getText().toString()), ciclo.getText().toString(), curso.getText().toString(), Double.parseDouble(nota.getText().toString()));
+                    nombre.setText("");
+                    edad.setText("");
+                    ciclo.setText("");
+                    curso.setText("");
+                    nota.setText("");
+                    Toast.makeText(getActivity(),"Datos guardados",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getActivity(),"Introduce datos validos", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
+        return v;
+    }
+
+    public boolean checkData(){
+        try {
+            Integer.parseInt(edad.getText().toString());
+            Double.parseDouble(nota.getText().toString());
+        }catch (NumberFormatException e){
+            return false;
+        }
+        return (nombre.getText().toString().length()>0)&&
+                (ciclo.getText().toString().length()>0)&&
+                (curso.getText().toString().length()>0);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
